@@ -56,9 +56,10 @@ let movechecker = [0,0,0,0,0,0,0,0,0];
 
 for (let i = 0; i < divs.length; i++) {
     divs[i].addEventListener("click",()=>{
-        if (checkTurn++%2 ==0) {
+        if (checkTurn%2 ==0) {
             if(movechecker[i]++ == 0){
                 divs[i].innerHTML = "X";
+                checkTurn++;
                 remark.innerHTML="";
                 if (result(movechecker) == 1) {
                     remark.innerHTML = "Draw";
@@ -72,6 +73,7 @@ for (let i = 0; i < divs.length; i++) {
         else{
             if(movechecker[i] == 0){
                 movechecker[i]+=2
+                checkTurn++;
                 divs[i].innerHTML = "O";
                 CheckWin(movechecker);
               remark.innerHTML="";
