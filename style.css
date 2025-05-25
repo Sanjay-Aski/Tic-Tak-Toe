@@ -5,15 +5,39 @@
 a{
     text-decoration: none;
 }
-body{
-    align-items: center;
+body {
+    font-family: 'Arial', sans-serif;
     display: flex;
     justify-content: center;
-    flex-direction: column;
-    background-color: #FFE9D0;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f0f0f0;
+    margin: 0;
+    color: #333;
 }
-h2{
+
+.container {
     text-align: center;
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 20px;
+}
+
+h2 {
+    margin-bottom: 10px; /* Adjusted margin */
+    color: #ddd;
+}
+
+h3 {
+    margin-top: 10px;
+    margin-bottom: 5px;
+    color: #ccc;
 }
 
 .reset{
@@ -89,4 +113,100 @@ p{
     height: 100%;
     border: 30px;
     padding: 60px;
+}
+
+#modeSelection button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    margin: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+#modeSelection button:hover {
+    background-color: #0056b3;
+}
+
+#board {
+    display: grid;
+    grid-template-columns: repeat(3, 100px);
+    grid-template-rows: repeat(3, 100px);
+    gap: 5px;
+    margin: 20px auto;
+    width: 310px;
+}
+
+.cell {
+    width: 100px;
+    height: 100px;
+    background-color: #e9e9e9;
+    border: 2px solid #ccc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 48px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.cell:hover {
+    background-color: #dcdcdc;
+}
+
+.cell.X {
+    color: #ff4136; /* Red for X */
+}
+
+.cell.O {
+    color: #0074d9; /* Blue for O */
+}
+
+#statusArea {
+    margin-bottom: 15px;
+    min-height: 24px;
+}
+
+#statusText {
+    font-size: 18px;
+    color: #333;
+}
+
+#resetBtn {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
+}
+
+#resetBtn:hover {
+    background-color: #1e7e34;
+}
+
+.hidden {
+    display: none;
+}
+
+#playerChoice {
+    margin-bottom: 10px;
+    color: #ddd;
+}
+
+#playerChoice label {
+    margin-right: 15px;
+    cursor: pointer;
+}
+
+#playerChoice input[type="radio"] {
+    margin-right: 5px;
+    cursor: pointer;
 }

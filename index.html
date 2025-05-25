@@ -3,34 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tic Tak Toe</title>
+    <title>Tic-Tac-Toe</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <p>Enjoy The Game!</p>
-    
-    <div id="main-container"><div >
-        <h1 style="color: #8E7AB5; text-align: center;">Play Now</h1>
-        <p id="remark"></p>
-        <p id="decision"></p>
-        <div class="row">
-            <div class="draw"><button class="btn"></button></div>
-            <div class="draw"><button class="btn"></button></div>
-            <div class="draw"><button class="btn"></button></div>
+    <div class="container">
+        <h1>Tic-Tac-Toe</h1>
+        <div id="modeSelection">
+            <h2>Select Game Mode</h2>
+            <button id="dualPlayerBtn">Dual Player</button>
+            <hr style="margin: 15px 0; border-color: #555;">
+            <h3>Single Player (vs AI)</h3>
+            <div id="playerChoice">
+                <label><input type="radio" name="playerSymbolChoice" value="X" checked> Play First</label>
+                <label><input type="radio" name="playerSymbolChoice" value="O"> Play Second</label>
+            </div>
+            <button id="singlePlayerBtn">Start Single Player Game</button>
         </div>
-        <div class="row">
-            <div class="draw"><button class="btn"></button></div>
-            <div class="draw"><button class="btn"></button></div>
-            <div class="draw"><button class="btn"></button></div>
-        </div>
-        <div class="row">
-            <div class="draw"><button class="btn"></button></div>
-            <div class="draw"><button class="btn"></button></div>
-            <div class="draw"><button class="btn"></button></div>
-        </div>
-    </div></div> 
 
-    <button class="reset">reset game</button>
+        <div id="gameArea" class="hidden">
+            <div id="statusArea">
+                <p id="statusText">Player X's turn</p>
+            </div>
+            <div id="board">
+                <div class="cell" data-index="0"></div>
+                <div class="cell" data-index="1"></div>
+                <div class="cell" data-index="2"></div>
+                <div class="cell" data-index="3"></div>
+                <div class="cell" data-index="4"></div>
+                <div class="cell" data-index="5"></div>
+                <div class="cell" data-index="6"></div>
+                <div class="cell" data-index="7"></div>
+                <div class="cell" data-index="8"></div>
+            </div>
+            <button id="resetBtn">Reset Game</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
 </body>
-<script src="script.js"></script>
 </html>

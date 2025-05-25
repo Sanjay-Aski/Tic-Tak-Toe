@@ -1,90 +1,200 @@
-let divs = document.querySelectorAll(".draw");
-let btns = document.querySelectorAll(".btn");
-let checkTurn= 0;
+const boardElement = document.getElementById('board');
+const cells = document.querySelectorAll('.cell');
+const statusText = document.getElementById('statusText');
+const resetBtn = document.getElementById('resetBtn');
+const singlePlayerBtn = document.getElementById('singlePlayerBtn');
+const dualPlayerBtn = document.getElementById('dualPlayerBtn');
+const modeSelectionDiv = document.getElementById('modeSelection');
+const gameAreaDiv = document.getElementById('gameArea');
 
-let remark = document.querySelector("#remark");
+let board = ['', '', '', '', '', '', '', '', ''];
+let currentPlayer = 'X';
+let gameActive = false;
+let gameMode = null; 
+let humanPlayer = 'X'; // Will be set based on user choice
+let aiPlayer = 'O';   // Will be set based on user choice
 
-let winCombination = [[0,1,2],[0,3,6],[0,4,8],[1,4,7],[2,5,8],[3,4,5],[6,7,8],[6,4,2]];
+const winningConditions = [
+    [0, 1, 2], [3, 4, 5], [6, 7, 8],
+    [0, 3, 6], [1, 4, 7], [2, 5, 8],
+    [0, 4, 8], [2, 4, 6]
+];
 
-let decision = document.querySelector("#decision");
+function handleCellClick(event) {
+    const clickedCell = event.target;
+    const clickedCellIndex = parseInt(clickedCell.getAttribute('data-index'));
 
-let reset = document.querySelector(".reset");
-
-
-let result = (movechecker)=> {
-    for (let i = 0; i < movechecker.length; i++) {
-        if(movechecker[i] == 0  && decision.innerHTML =="") return 0;
+    if (board[clickedCellIndex] !== '' || !gameActive) {
+        return;
     }
-    return 1;
+
+    makeMove(clickedCellIndex, currentPlayer);
+
+    if (checkWin(board, currentPlayer)) {
+        endGame(false);
+        return;
+    }
+    if (board.every(cell => cell !== '')) {
+        endGame(true);
+        return;
+    }
+
+    switchPlayer();
+
+    if (gameMode === 'single' && currentPlayer === aiPlayer && gameActive) {
+        setTimeout(aiMove, 500);
+    }
 }
 
-
-function blockAll() {
-    for (let i = 0; i < divs.length; i++) {
-        btns[i].disabled = true;
-    }
+function makeMove(index, player) {
+    board[index] = player;
+    cells[index].textContent = player;
+    cells[index].classList.add(player);
 }
-function CheckWin(movechecker) {
-    for (let i = 0; i < winCombination.length; i++) {
-        let [num1, num2, num3] = winCombination[i];
-        if (movechecker[num1] == 1 && movechecker[num2] == 1 && movechecker[num3] == 1) {
-            decision.innerHTML = "X WINNER";
-            remark.innerHTML = "";
-            blockAll();
-            return;
-        }
-        if (movechecker[num1] == 2 && movechecker[num2] == 2 && movechecker[num3] == 2) {
-            decision.innerHTML = "O WINNER";
-            remark.innerHTML = "";
-            blockAll();
-            return;
-        }
-    }
 
-    if (result(movechecker) == 1) {
-        remark.innerHTML = "Draw";
+function switchPlayer() {
+    currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+    statusText.textContent = gameActive ? `${currentPlayer === humanPlayer ? 'Your' : "AI's"} turn (${currentPlayer})` : statusText.textContent;
+    if (gameMode === 'single' && currentPlayer === aiPlayer && gameActive) { // Check added here as well for AI starting
+        statusText.textContent = `AI's turn (${aiPlayer})`;
+    } else if (gameMode === 'single' && currentPlayer === humanPlayer && gameActive) {
+        statusText.textContent = `Your turn (${humanPlayer})`;
+    } else if (gameMode === 'dual') {
+        statusText.textContent = `Player ${currentPlayer}'s turn`;
     }
 }
 
-
-reset.addEventListener("click",() =>{
-    location.reload();
-})
-
-
-let movechecker = [0,0,0,0,0,0,0,0,0];
-
-for (let i = 0; i < divs.length; i++) {
-    divs[i].addEventListener("click",()=>{
-        if (checkTurn%2 ==0) {
-            if(movechecker[i]++ == 0){
-                divs[i].innerHTML = "X";
-                checkTurn++;
-                remark.innerHTML="";
-                if (result(movechecker) == 1) {
-                    remark.innerHTML = "Draw";
-                }
-                CheckWin(movechecker);
-            }
-            else{
-              remark.innerHTML = "Wrong Move!";
-            }
-        }
-        else{
-            if(movechecker[i] == 0){
-                movechecker[i]+=2
-                checkTurn++;
-                divs[i].innerHTML = "O";
-                CheckWin(movechecker);
-              remark.innerHTML="";
-              if (result(movechecker) == 1) {
-                remark.innerHTML = "Draw";
-            }
-            }
-            else{
-              remark.innerHTML = "Wrong Move!";
-            }
-        }
-        console.log(`box ${i} is clicked`);
+function checkWin(currentBoard, player) {
+    return winningConditions.some(condition => {
+        return condition.every(index => currentBoard[index] === player);
     });
-    };
+}
+
+function endGame(draw) {
+    gameActive = false;
+    if (draw) {
+        statusText.textContent = "It's a Draw!";
+    } else {
+        if (gameMode === 'single') {
+            statusText.textContent = (currentPlayer === humanPlayer) ? "You Win!" : "AI Wins!";
+        } else {
+            statusText.textContent = `Player ${currentPlayer} Wins!`;
+        }
+    }
+}
+
+function resetGame() {
+    board = ['', '', '', '', '', '', '', '', ''];
+    gameActive = false;
+    currentPlayer = 'X';
+    cells.forEach(cell => {
+        cell.textContent = '';
+        cell.classList.remove('X');
+        cell.classList.remove('O');
+    });
+    statusText.textContent = "";
+    modeSelectionDiv.classList.remove('hidden');
+    gameAreaDiv.classList.add('hidden');
+    gameMode = null;
+    // Ensure radio button default is checked if needed, though HTML default is usually fine
+    document.querySelector('input[name="playerSymbolChoice"][value="X"]').checked = true;
+}
+
+function startGame(mode) {
+    gameMode = mode;
+    gameActive = true;
+    currentPlayer = 'X'; // X always starts
+
+    if (gameMode === 'single') {
+        const playerChoice = document.querySelector('input[name="playerSymbolChoice"]:checked').value;
+        if (playerChoice === 'X') {
+            humanPlayer = 'X';
+            aiPlayer = 'O';
+            statusText.textContent = `Your turn (${humanPlayer})`;
+        } else {
+            humanPlayer = 'O';
+            aiPlayer = 'X';
+            statusText.textContent = `AI's turn (${aiPlayer})`;
+        }
+    } else { // Dual player
+        humanPlayer = 'X'; // Not strictly necessary for dual, but good for consistency
+        aiPlayer = 'O';   // Not strictly necessary for dual
+        statusText.textContent = `Player ${currentPlayer}'s turn`;
+    }
+    
+    modeSelectionDiv.classList.add('hidden');
+    gameAreaDiv.classList.remove('hidden');
+    
+    if (gameMode === 'single' && currentPlayer === aiPlayer) {
+       setTimeout(aiMove, 500);
+    }
+}
+
+function aiMove() {
+    if (!gameActive) return;
+    let bestScore = -Infinity;
+    let move;
+    for (let i = 0; i < board.length; i++) {
+        if (board[i] === '') {
+            board[i] = aiPlayer;
+            let score = minimax(board, 0, false);
+            board[i] = '';
+            if (score > bestScore) {
+                bestScore = score;
+                move = i;
+            }
+        }
+    }
+    
+    if (move !== undefined) {
+        makeMove(move, aiPlayer);
+        if (checkWin(board, aiPlayer)) {
+            endGame(false);
+            return;
+        }
+        if (board.every(cell => cell !== '')) {
+            endGame(true);
+            return;
+        }
+        switchPlayer(); // AI made a move, now switch to human
+    }
+}
+
+function minimax(currentBoard, depth, isMaximizing) {
+    if (checkWin(currentBoard, aiPlayer)) return 10 - depth;
+    if (checkWin(currentBoard, humanPlayer)) return -10 + depth;
+    if (currentBoard.every(cell => cell !== '')) return 0;
+
+    if (isMaximizing) {
+        let bestScore = -Infinity;
+        for (let i = 0; i < currentBoard.length; i++) {
+            if (currentBoard[i] === '') {
+                currentBoard[i] = aiPlayer;
+                let score = minimax(currentBoard, depth + 1, false);
+                currentBoard[i] = '';
+                bestScore = Math.max(score, bestScore);
+            }
+        }
+        return bestScore;
+    } else {
+        let bestScore = Infinity;
+        for (let i = 0; i < currentBoard.length; i++) {
+            if (currentBoard[i] === '') {
+                currentBoard[i] = humanPlayer;
+                let score = minimax(currentBoard, depth + 1, true);
+                currentBoard[i] = '';
+                bestScore = Math.min(score, bestScore);
+            }
+        }
+        return bestScore;
+    }
+}
+
+cells.forEach(cell => cell.addEventListener('click', handleCellClick));
+resetBtn.addEventListener('click', resetGame);
+singlePlayerBtn.addEventListener('click', () => {
+    startGame('single');
+});
+dualPlayerBtn.addEventListener('click', () => startGame('dual'));
+
+resetGame();
